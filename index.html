@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calculator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background-color: #f0f0f0;
+      background-image: linear-gradient(45deg, #3498db, #2ecc71);
+    }
+    .columns {
+      display: block;
+      justify-content: center;
+      align-items: flex-start;
+    }
+    .column-1 {
+      padding: 20px;
+      border-radius: 50px;
+      width: 70%;
+      height: 370px;
+      margin: 10% auto;
+      margin-top: 50px;
+      box-shadow: 0 0 10px rgba(50, 50, 50, 50.1);
+    }
+    .column-2 {
+      padding: 20px;
+      border-radius: 50px;
+      width: 70%;
+      height: 300px;
+      margin: 10% auto;
+      box-shadow: 0 0 10px rgba(50, 50, 50, 50.1);
+    }
+    h1 {
+      color: #333;
+      margin-bottom: 20px;
+    }
+    label {
+      display: block;
+      margin-bottom: 5px;
+    }
+    input, select {
+      margin-bottom: 10px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    button {
+      padding: 10px;
+      cursor: pointer;
+      background-color: #36daa3;
+      color: #000000;
+      border: none;
+      border-radius: 30px;
+      font-size: 16px;
+      font-weight: 600;
+      transition: background-color 0.3s;
+      margin-top: 10px;
+      margin-left: 10px;
+      box-shadow: 0 0 10px rgba(50, 50, 50, 50.1);
+    }
+    button:hover {
+      background-color: #2980b9;
+    }
+    div.result {
+      margin-top: 20px;
+      margin-bottom: 10px;
+      font-weight: bold;      
+    }
+    p {
+      font-size: 18px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <section class="columns">
+    <div class="column-1">
+      <h1>Sequence Calculator</h1>
+
+      <label for="operation">Select a sequence:</label>
+      <select id="operation">
+        <option value="fibonacci">Fibonacci</option>
+        <option value="tribonacci">Tribonacci</option>
+        <option value="lucas">Lucas</option>
+        <option value="collatz">Collatz</option>
+      </select>
+
+      <label for="number">Enter the Term:</label>
+      <input type="number" id="number" min="0" placeholder="Enter a non-negative integer">
+
+      <button onclick="calculate()">Calculate</button>
+
+      <div class="result" id="result"></div>
+
+      <button onclick="displayTerms()">Display Terms</button>
+      <button onclick="displaySolution()">Display Solution</button>
+    </div>
+
+    <div class="column-2">
+      <h2>
+        All Terms:
+      </h2>
+      <p id="termsResult"></p>
+      <h2>
+        Solutions:
+      </h2>
+      <p id="solution"></p>
+    </div>
+  </section>
+
+  <script>
+    function calculate() {
+      const operation = document.getElementById('operation').value;
+      const n = getInputNumber();
+      let result;
+
+      switch (operation) {
+        case 'fibonacci':
+          result = fibonacci(n);
+          break;
+        case 'tribonacci':
+          result = tribonacci(n);
+          break;
+        case 'lucas':
+          result = lucas(n);
+          break;
+        case 'collatz':
+          result = collatz(n);
+          break;
+        default:
+          result = 'Invalid operation';
+      }
+
+      displayResult(result);
+    }
+
+    function getInputNumber() {
+      return parseInt(document.getElementById('number').value, 10);
+    }
+
+    function displayResult(result) {
+      document.getElementById('result').innerText = `Result: ${result}`;
+    }
+
+    function fibonacci(n) {
+      if (n <= 1) return n;
+      return fibonacci(n - 1) + fibonacci(n - 2);
+    }
+
+    function tribonacci(n) {
+      if (n <= 2) return n === 2 ? 1 : n;
+      return tribonacci(n - 1) + tribonacci(n - 2) + tribonacci(n - 3);
+    }
+
+    function lucas(n) {
+      if (n === 0) return 2;
+      if (n === 1) return 1;
+      return lucas(n - 1) + lucas(n - 2);
+    }
+
+    function collatz(n) {
+      const terms = [];
+      for (let i = 1; i <= n; i++) {
+        terms.push(n);
+        n = n % 2 === 0 ? n / 2 : 3 * n + 1;
+      }
+      return terms;
+    }
+
+    function displayTerms() {
+      const n = getInputNumber();
+      const operation = document.getElementById('operation').value;
+      const terms = generateTerms(n, operation);
+      const termsResult = terms.join(', ');
+
+      document.getElementById('termsResult').innerText = `${termsResult}`;
+    }
+
+    function displaySolution() {
+      const n = getInputNumber();
+      const operation = document.getElementById('operation').value;
+      const solution = generateSolution(n, operation);
+
+      document.getElementById('solution').innerHTML = `${solution}`;
+    }
+
+    function generateTerms(n, operation) {
+      const terms = [];
+      for (let i = 1; i <= n; i++) {
+        terms.push(calculateOperation(i, operation));
+      }
+      return terms;
+    }
+
+    function generateSolution(n, operation) {
+      switch (operation) {
+        case 'fibonacci':
+          return `<b>F(n) = F(n-1) + F(n-2)</b>`;
+        case 'tribonacci':
+          return `<b>T(n) = T(n-1) + T(n-2) + T(n-3)</b>`;
+        case 'lucas':
+          return `<b>L(n) = L(n-1) + L(n-2)</b>`;
+        case 'collatz':
+          return `<b>C(n) = n/2 (if n is even), 3n + 1 (if n is odd)</b>`;
+        default:
+          return 'Invalid operation';
+      }
+    }
+
+    function calculateOperation(i, operation) {
+      switch (operation) {
+        case 'fibonacci':
+          return fibonacci(i);
+        case 'tribonacci':
+          return tribonacci(i);
+        case 'lucas':
+          return lucas(i);
+        case 'collatz':
+          return collatz.join(', ');
+        default:
+          return 'Invalid operation';
+      }
+    }
+  </script>
+</body>
+</html>
